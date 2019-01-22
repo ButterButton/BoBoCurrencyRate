@@ -16,14 +16,9 @@ def index():
 @app.route("/QueryDateTime/<DateTime>")
 def QueryDateTime(DateTime):
     db = inital()
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM tw_bank WHERE Time = %s",(DateTime,))
-    result = cursor.fetchall()
-    print(result[0][1])
-    cursor.close()
-    db.close()
-    # JsonTransFormat(result)
-    return DateTime
+    result = DBSelect(db, DateTime)
+    Json = ConvertToJson(DataSet(result))
+    return Response(Json, mimetype='text/json')
 
 def inital():
     configfile = configparser.ConfigParser()
@@ -37,24 +32,45 @@ def inital():
         )
     return mydb
 
-def JsonTransFormat(result):
+def DBSelect(db, DateTime):
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM tw_bank WHERE Time = %s",(DateTime,))
+    result = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return result
+
+def DataSet(result):
     if(result == None):
         return None
     else:
-        TempCurrencyRate = {
+        CurrencyRate = {
             "DateTime" : result[0][1],
-            "ExchangeRate" : [
-                {
-                    "No" : 1,
-                    "Currency" : "TWD",
-                    "CashSell" : 123,
-                    "CashBuy" : 456,
-                    "SpotSell" : 798,
-                    "SpotBuy" : 321
-                }
-            ]
+            "ExchangeRate" : []
         }
+
+        ExchangeRate = []
+
+        for item in result:
+            Currency = {}
+            Currency["No"] = item[0]
+            Currency["Currency"] = item[1]
+            Currency["CashSell"] = item[2]
+            Currency["CashBuy"] = item[3]
+            Currency["SpotSell"] = item[4]
+            Currency["SpotBuy"] = item[5]
+            ExchangeRate.append(Currency)
+
+        CurrencyRate["ExchangeRate"] = ExchangeRate
+
+        return CurrencyRate
+
     return None
 
+def ConvertToJson(DataSet):
+    if(DataSet != None):
+        return json.dumps(DataSet, ensure_ascii=False, indent=4)
+    else:
+        return None
 if __name__ == "__main__":
     app.run(debug=True)
