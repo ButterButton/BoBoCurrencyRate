@@ -11,14 +11,19 @@ CORS(app)
 
 @app.route("/")
 def index():
+    return "HI Welcome to BoBo の CurrenyRate API"
+
+@app.route("/QueryDateTime/<DateTime>")
+def QueryDateTime(DateTime):
     db = inital()
     cursor = db.cursor()
-    cursor.execute("""SELECT * FROM tw_bank LIMIT 10""")
-    result = mycursor.fetchall()
-    print(result)
+    cursor.execute("SELECT * FROM tw_bank WHERE Time = %s",(DateTime,))
+    result = cursor.fetchall()
+    print(result[0][1])
     cursor.close()
     db.close()
-    return "HI"
+    # JsonTransFormat(result)
+    return DateTime
 
 def inital():
     configfile = configparser.ConfigParser()
@@ -31,13 +36,25 @@ def inital():
         database = configfile["DB"]["D_name"]
         )
     return mydb
-    # mycursor = mydb.cursor()
-    # mycursor.execute("""SELECT * FROM tw_bank LIMIT 10""")
-    # result = mycursor.fetchall()
-    # print(result)
-    # mycursor.close()
-    # mydb.close()
-    return mycursor
+
+def JsonTransFormat(result):
+    if(result == None):
+        return None
+    else:
+        TempCurrencyRate = {
+            "DateTime" : result[0][1],
+            "ExchangeRate" : [
+                {
+                    "No" : 1,
+                    "Currency" : "TWD",
+                    "CashSell" : 123,
+                    "CashBuy" : 456,
+                    "SpotSell" : 798,
+                    "SpotBuy" : 321
+                }
+            ]
+        }
+    return None
 
 if __name__ == "__main__":
     app.run(debug=True)
