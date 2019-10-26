@@ -1,0 +1,8 @@
+Flask==1.0.2
+pylint==2.2.2
+virtualenv==16.1.0
+flask-cors
+gunicorn
+pytz
+mysql-connector
+configparser

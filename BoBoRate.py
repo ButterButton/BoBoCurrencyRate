@@ -54,11 +54,11 @@ def DataSet(result):
         for item in result:
             Currency = {}
             Currency["No"] = item[0]
-            Currency["Currency"] = item[2]
-            Currency["CashSell"] = item[3]
-            Currency["CashBuy"] = item[4]
-            Currency["SpotSell"] = item[5]
-            Currency["SpotBuy"] = item[6]
+            Currency["Currency"] = item[1]
+            Currency["CashSell"] = item[2]
+            Currency["CashBuy"] = item[3]
+            Currency["SpotSell"] = item[4]
+            Currency["SpotBuy"] = item[5]
             ExchangeRate.append(Currency)
 
         CurrencyRate["ExchangeRate"] = ExchangeRate
